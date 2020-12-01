@@ -1,0 +1,53 @@
+body{
+    font-family: Calibri;
+    background-color: #228B22;
+    color: white;
+}
+
+main{
+    margin: 0 auto;
+    max-width: 330px;
+}
+
+span{
+    color: gold;
+}
+
+.blue{
+    color: #0000CD;
+}
+
+.title{
+    font-family: 'Sansita Swashed', cursive;
+    color: gold;
+    background-color: black;
+    text-align: center;
+    font-size: 60px;
+    padding: 10px 0;
+}
+
+.display-dealer-points, .display-player-points{
+    font-size: 25px;
+    margin-top: 10px;
+}
+
+.display-result{
+    font-size: 25px;
+    margin: 10px 0;
+}
+
+button{
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    width: 80px;
+    height: 35px;
+    background-color: black;
+    border: 2px solid white;
+    border-radius: 5px;
+}
+
+button:hover{
+    cursor: pointer;
+    background-color: #8B0000;
+}
