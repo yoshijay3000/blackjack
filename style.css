@@ -47,6 +47,14 @@ button{
     border-radius: 5px;
 }
 
+.replay-btn{
+    background-color: #0000CD;
+}
+
+.replay-btn:hover{
+    background-color: gold;
+}
+
 button:hover{
     cursor: pointer;
     background-color: #8B0000;

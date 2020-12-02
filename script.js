@@ -2,6 +2,7 @@
 
 //this script uses the JS library poker.js  https://tairraos.github.io/Poker.JS/
 
+//DOM queries
 const displayPlayerCards = document.querySelector('.display-player-cards');
 const displayDealerCards = document.querySelector('.display-dealer-cards');
 const displayDealerPoints = document.querySelector('.display-dealer-points');
@@ -9,6 +10,18 @@ const displayPlayerPoints = document.querySelector('.display-player-points');
 const displayResult = document.querySelector('.display-result');
 const hitBtn = document.querySelector('.hit-btn');
 const standBtn = document.querySelector('.stand-btn');
+const replyBtn = document.querySelector('.replay-btn');
+
+//constants, variables, and flags for game
+const suits = ['hearts', 'diamonds', 'spades', 'clubs'];
+let cardDeck = [];
+
+let playerScore = 0;
+let dealtCards = [];
+
+let gameOver = false;
+let hasAce = false;
+let AceIsOne = false;
 
 //create card class
 class Card{
@@ -18,39 +31,41 @@ class Card{
     }
 }
 
-//create card deck
-const suits = ['hearts', 'diamonds', 'spades', 'clubs'];
-const cardDeck = [];
+//create card deck function
+function createCardDeck(cardDeck){
+    suits.forEach(suit => {
+        for (let i = 1; i <= 13; i++) {
+            let point = '';
 
-suits.forEach(suit => {
-    for(let i = 1; i <= 13; i++ ){
-        let point = '';
+            switch (i) {
+                case 1:
+                    point = 'A';
+                    break;
+                case 11:
+                    point = 'J';
+                    break;
+                case 12:
+                    point = 'Q';
+                    break;
+                case 13:
+                    point = 'K';
+                    break;
+                default:
+                    point = i;
+            }
 
-        switch(i){
-            case 1:
-                point = 'A';
-                break;
-            case 11:
-                point = 'J';
-                break;
-            case 12:
-                point = 'Q';
-                break;
-            case 13:
-                point = 'K';
-                break;
-            default:
-                point = i;
+            let card = new Card(suit, point);
+            cardDeck.push(card);
         }
+    });
+    return cardDeck;
+}
 
-        let card = new Card(suit, point);
-        cardDeck.push(card);
-    }
-});
 
-//shuffle card deck
-shuffle(cardDeck);
+//create and shuffle initial card deck
+cardDeck = createCardDeck(cardDeck);
 //console.log(cardDeck);
+shuffle(cardDeck);
 
 
 //shuffle card deck function (fisher-yates algorithm)
@@ -104,7 +119,7 @@ function calculateCardPoint(card){
     return cardPoint;
 }
 
-//function to deal card to player
+//function to deal card to player and calculate score
 function dealCardToPlayer(){
     let card = dealCard();
     dealtCards.push(card);
@@ -140,34 +155,58 @@ function dealCardToPlayer(){
     }
 }
 
-//score and flags for game
-let playerScore = 0;
-let dealtCards = [];
-
-let gameOver = false;
-let hasAce = false;
-let AceIsOne = false;
 
 
-//deal initial cards to dealer (dealer has one card down and one card up)
-const dealerCardLeft = dealCard();
-const dealerCardRight = dealCard();
+//deal cards to dealer function (dealer has one card down and one card up)
+let dealerCardLeft;
+let dealerCardRight;
 
-displayDealerCards.appendChild(Poker.getBackImage(60));
-displayDealerCards.appendChild(Poker.getCardImage(60, dealerCardRight.suit, dealerCardRight.point));
+function dealCardToDealer(){
+    dealerCardLeft = dealCard();
+    dealerCardRight = dealCard();
 
-//deal initial cards to player
+    displayDealerCards.appendChild(Poker.getBackImage(60));
+    displayDealerCards.appendChild(Poker.getCardImage(60, dealerCardRight.suit, dealerCardRight.point));
+}
+
+//function to reset gane
+function resetGame(){
+    gameOver = false;
+
+    //create new card deck and shuffle it
+    cardDeck = createCardDeck(cardDeck);
+    shuffle(cardDeck);
+
+    //remove all cards in UI, and remove dealer points and player points in UI as well as result
+    displayDealerCards.innerHTML = '';
+    displayPlayerCards.innerHTML = '';
+    displayDealerPoints.innerHTML = 'Dealer Points:';
+    displayPlayerPoints.innerHTML = 'Your Points:';
+    displayResult.innerHTML = 'Result:';
+
+    //reset player points
+    playerScore = 0;
+
+    //deal card to dealer and player
+    dealCardToDealer();
+    dealCardToPlayer();
+    dealCardToPlayer();
+
+}
+
+//deal initial cards to player and dealer
+dealCardToDealer()
 dealCardToPlayer();
 dealCardToPlayer();
 
-//deal card to player and calculate score
+//hit button - deal card to player and calculate score
 hitBtn.addEventListener('click', ()=>{
     if (!gameOver){
         dealCardToPlayer()
     }
 });
 
-//stand
+//stand button - calulate score and display result
 standBtn.addEventListener('click', ()=>{
     if (!gameOver){
         //flip over first dealer card
@@ -180,14 +219,19 @@ standBtn.addEventListener('click', ()=>{
 
         //compare scores and declare winner/loser
         if (dealerScore === playerScore) {
-            displayResult.innerHTML = `Result: <span class="blue">It's a tie<span>`
+            displayResult.innerHTML = `Result: <span class="blue">It's a tie<span>`;
         }
         else if (dealerScore > playerScore) {
-            displayResult.innerHTML = `Result: <span class="blue">You lose!<span>`
+            displayResult.innerHTML = `Result: <span class="blue">You lose!<span>`;
         }
-        else displayResult.innerHTML = `Result: <span class="blue">You win!<span>`
+        else displayResult.innerHTML = `Result: <span class="blue">You win!<span>`;
     }
 
     gameOver = true;
     
+});
+
+//replay button - resets game
+replyBtn.addEventListener('click', ()=>{
+    resetGame();
 });
